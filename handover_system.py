@@ -9,16 +9,15 @@ class HandoverSystem:
         self.root.title("工讀生交接系統")
         self.root.geometry("800x600")
         
-        # --- 色票與風格設定 (您可以根據您的客戶管理系統調整這裡) ---
         self.colors = {
-            "bg_main": "#2D2D30",       # 主視窗背景 (深灰)
-            "bg_panel": "#3E3E42",      # 區塊背景 (略淺的灰)
-            "fg_text": "#FFFFFF",       # 主要文字 (白)
-            "fg_sub": "#CCCCCC",        # 次要文字 (淺灰)
-            "accent": "#007ACC",        # 強調色 (藍色)
+            "bg_main": "#2D2D30",       # 主視窗背景
+            "bg_panel": "#3E3E42",      # 區塊背景
+            "fg_text": "#FFFFFF",       # 主要文字
+            "fg_sub": "#CCCCCC",        # 次要文字
+            "accent": "#007ACC",        # 強調色
             "btn_bg": "#007ACC",        # 按鈕背景
             "btn_fg": "#FFFFFF",        # 按鈕文字
-            "input_bg": "#1E1E1E",      # 輸入框背景 (更深)
+            "input_bg": "#1E1E1E",      # 輸入框背景
             "input_fg": "#FFFFFF"       # 輸入框文字
         }
         
@@ -62,7 +61,7 @@ class HandoverSystem:
         tk.Label(self.left_panel, text="  待辦事項 (勾選代表已完成)", 
                  font=self.font_main, bg=self.colors["bg_panel"], fg=self.colors["accent"], anchor="w", pady=10).pack(fill=tk.X)
 
-        # 捲動區塊 (為了美觀，這裡做一點層次)
+        # 捲動區塊
         canvas_frame = tk.Frame(self.left_panel, bg=self.colors["bg_panel"])
         canvas_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
 
@@ -93,10 +92,10 @@ class HandoverSystem:
 
         # 文字輸出框 (深底白字)
         self.result_text = tk.Text(self.right_panel, height=15, width=30, 
-                                   font=("Consolas", 11), # 用等寬字體看起來像程式碼或系統log
+                                   font=("Consolas", 11),
                                    bg=self.colors["input_bg"], 
                                    fg=self.colors["input_fg"],
-                                   insertbackground="white", # 游標顏色
+                                   insertbackground="white",
                                    relief="flat", padx=10, pady=10)
         self.result_text.pack(fill=tk.BOTH, expand=True, padx=15, pady=(0, 15))
 
@@ -163,7 +162,6 @@ class HandoverSystem:
         for i, (label_name, _, _) in enumerate(self.tasks):
             var = tk.BooleanVar(value=False)
             
-            # Checkbutton 在深色模式下的設定比較繁瑣
             chk = tk.Checkbutton(
                 self.scrollable_frame, 
                 text=label_name, 
