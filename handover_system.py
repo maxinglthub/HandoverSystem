@@ -6,6 +6,7 @@ from typing import List
 import tkinter as tk
 from tkinter import messagebox
 import customtkinter as ctk
+import pygame
 
 @dataclass
 class Task:
@@ -21,6 +22,9 @@ class HandoverApp(ctk.CTk):
         #icon
         icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "icon.ico")
         self.iconbitmap(icon_path)
+
+        #mp3
+        self.mp3_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mp3.mp3")
 
         #CTK主題
         ctk.set_appearance_mode("Dark")
@@ -46,6 +50,7 @@ class HandoverApp(ctk.CTk):
 
         self._build_ui()
         self.load_tasks()
+        pygame.mixer.init()
 
     def _build_ui(self):
         #header
@@ -56,6 +61,9 @@ class HandoverApp(ctk.CTk):
         ctk.CTkLabel(header, text="牛馬交接系統", font=self.font_title).grid(
             row=0, column=0, padx=16, pady=12, sticky="w"
         )
+
+        btn_play_mp3 = ctk.CTkButton(header, text="a", command=self.play_mp3)
+        btn_play_mp3.grid(row=0, column=3, padx=18, sticky="w")
 
         #left tasks
         left = ctk.CTkFrame(self, corner_radius=12)
@@ -190,6 +198,12 @@ class HandoverApp(ctk.CTk):
     def clear_all(self):
         for v in self.vars:
             v.set(False)
+
+    #gugugaga
+    def play_mp3(self):
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load(self.mp3_path)
+        pygame.mixer.music.play()
 
 
 if __name__ == "__main__":
