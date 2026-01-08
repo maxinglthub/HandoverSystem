@@ -1,10 +1,12 @@
-import tkinter as tk
+import tkinter
 from tkinter import messagebox
-import customtkinter as ctk #之後再來改
+import customtkinter as ctk
 import datetime
 import os
 from typing import List, Dict, Optional
 
+
+#出單設定檔案
 LIST: Dict[str, List[str]] = {
     "客戶編號": ["no"],
     "名字": ["name"],
@@ -35,9 +37,6 @@ class HandoverSystem:
         self.font_title = ("Microsoft JhengHei", 14, "bold")
         self.font_main = ("Microsoft JhengHei", 11)
         
-        # 套用主背景色
-        self.root.configure(bg=self.colors["bg_main"])
-        
         # 資料變數
         self.tasks = []
         self.check_vars = []
@@ -52,35 +51,35 @@ class HandoverSystem:
         """建立現代化深色介面"""
         
         # --- 標題列 ---
-        header_frame = tk.Frame(self.root, bg=self.colors["bg_main"], pady=10)
-        header_frame.pack(fill=tk.X, padx=20)
+        header_frame = tkinter.Frame(self.root, bg=self.colors["bg_main"], pady=10)
+        header_frame.pack(fill=tkinter.X, padx=20)
         
-        lbl_title = tk.Label(header_frame, text="每日交接事項清單", 
+        lbl_title = tkinter.Label(header_frame, text="每日交接事項清單", 
                              font=self.font_title, 
                              bg=self.colors["bg_main"], fg=self.colors["fg_text"])
-        lbl_title.pack(side=tk.LEFT)
+        lbl_title.pack(side=tkinter.LEFT)
 
         # --- 主內容區 (分為左右兩邊) ---
-        main_content = tk.Frame(self.root, bg=self.colors["bg_main"])
-        main_content.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+        main_content = tkinter.Frame(self.root, bg=self.colors["bg_main"])
+        main_content.pack(fill=tkinter.BOTH, expand=True, padx=20, pady=10)
 
         # === 左側：選項區 ===
-        self.left_panel = tk.Frame(main_content, bg=self.colors["bg_panel"], padx=2, pady=2)
-        self.left_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 10))
+        self.left_panel = tkinter.Frame(main_content, bg=self.colors["bg_panel"], padx=2, pady=2)
+        self.left_panel.pack(side=tkinter.LEFT, fill=tkinter.BOTH, expand=True, padx=(0, 10))
         self.display_tasks: List[str] = []
         
         # 左側標題
-        tk.Label(self.left_panel, text="待辦事項", 
-                 font=self.font_main, bg=self.colors["bg_panel"], fg=self.colors["accent"], anchor="w", pady=10).pack(fill=tk.X)
+        tkinter.Label(self.left_panel, text="待辦事項", 
+                 font=self.font_main, bg=self.colors["bg_panel"], fg=self.colors["accent"], anchor="w", pady=10).pack(fill=tkinter.X)
 
         # 捲動區塊
-        canvas_frame = tk.Frame(self.left_panel, bg=self.colors["bg_panel"])
-        canvas_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
+        canvas_frame = tkinter.Frame(self.left_panel, bg=self.colors["bg_panel"])
+        canvas_frame.pack(fill=tkinter.BOTH, expand=True, padx=10, pady=(0, 10))
 
-        self.canvas = tk.Canvas(canvas_frame, bg=self.colors["bg_panel"], highlightthickness=0)
-        self.scrollbar = tk.Scrollbar(canvas_frame, orient="vertical", command=self.canvas.yview, bg=self.colors["bg_panel"])
+        self.canvas = tkinter.Canvas(canvas_frame, bg=self.colors["bg_panel"], highlightthickness=0)
+        self.scrollbar = tkinter.Scrollbar(canvas_frame, orient="vertical", command=self.canvas.yview, bg=self.colors["bg_panel"])
         
-        self.scrollable_frame = tk.Frame(self.canvas, bg=self.colors["bg_panel"])
+        self.scrollable_frame = tkinter.Frame(self.canvas, bg=self.colors["bg_panel"])
 
         self.scrollable_frame.bind(
             "<Configure>",
@@ -90,37 +89,37 @@ class HandoverSystem:
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
 
-        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.canvas.pack(side=tkinter.LEFT, fill=tkinter.BOTH, expand=True)
+        self.scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 
 
         # === 右側：預覽區 ===
-        self.right_panel = tk.Frame(main_content, bg=self.colors["bg_panel"])
-        self.right_panel.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=(10, 0))
+        self.right_panel = tkinter.Frame(main_content, bg=self.colors["bg_panel"])
+        self.right_panel.pack(side=tkinter.RIGHT, fill=tkinter.BOTH, expand=True, padx=(10, 0))
 
         # 右側標題
-        tk.Label(self.right_panel, text="  交接內容預覽", 
-                 font=self.font_main, bg=self.colors["bg_panel"], fg=self.colors["accent"], anchor="w", pady=10).pack(fill=tk.X)
+        tkinter.Label(self.right_panel, text="  交接內容預覽", 
+                 font=self.font_main, bg=self.colors["bg_panel"], fg=self.colors["accent"], anchor="w", pady=10).pack(fill=tkinter.X)
 
         # 文字輸出框 (深底白字)
-        self.result_text = tk.Text(self.right_panel, height=15, width=30, 
+        self.result_text = tkinter.Text(self.right_panel, height=15, width=30, 
                                    font=("Consolas", 11),
                                    bg=self.colors["input_bg"], 
                                    fg=self.colors["input_fg"],
                                    insertbackground="white",
                                    relief="flat", padx=10, pady=10)
-        self.result_text.pack(fill=tk.BOTH, expand=True, padx=15, pady=(0, 15))
+        self.result_text.pack(fill=tkinter.BOTH, expand=True, padx=15, pady=(0, 15))
 
         # 按鈕區
-        btn_frame = tk.Frame(self.right_panel, bg=self.colors["bg_panel"])
-        btn_frame.pack(fill=tk.X, padx=15, pady=(0, 15))
+        btn_frame = tkinter.Frame(self.right_panel, bg=self.colors["bg_panel"])
+        btn_frame.pack(fill=tkinter.X, padx=15, pady=(0, 15))
 
-        self.create_styled_button(btn_frame, " 複製內容 ", self.copy_to_clipboard).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
-        self.create_styled_button(btn_frame, " 重新讀取設定 ", self.load_config).pack(side=tk.RIGHT, fill=tk.X, expand=True, padx=(5, 0))
+        self.create_styled_button(btn_frame, " 複製內容 ", self.copy_to_clipboard).pack(side=tkinter.LEFT, fill=tkinter.X, expand=True, padx=(0, 5))
+        self.create_styled_button(btn_frame, " 重新讀取設定 ", self.load_config).pack(side=tkinter.RIGHT, fill=tkinter.X, expand=True, padx=(5, 0))
 
     def create_styled_button(self, parent, text, command):
         """建立統一風格的按鈕"""
-        btn = tk.Button(parent, text=text, command=command,
+        btn = tkinter.Button(parent, text=text, command=command,
                         bg=self.colors["btn_bg"], fg=self.colors["btn_fg"],
                         font=self.font_main, relief="flat",
                         activebackground=self.colors["fg_text"], 
@@ -156,14 +155,14 @@ class HandoverSystem:
             self.generate_text()
             
         except Exception as e:
-            self.result_text.insert(tk.END, f"錯誤: {str(e)}")
+            self.result_text.insert(tkinter.END, f"錯誤: {str(e)}")
 
     def create_checkboxes(self):
         """在深色背景上建立勾選框"""
         for i, (label_name, _, _) in enumerate(self.tasks):
-            var = tk.BooleanVar(value=False)
+            var = tkinter.BooleanVar(value=False)
             
-            chk = tk.Checkbutton(
+            chk = tkinter.Checkbutton(
                 self.scrollable_frame, 
                 text=label_name, 
                 variable=var, 
@@ -176,7 +175,7 @@ class HandoverSystem:
                 font=self.font_main,
                 pady=5
             )
-            chk.pack(anchor="w", fill=tk.X)
+            chk.pack(anchor="w", fill=tkinter.X)
             self.check_vars.append(var)
 
     def generate_text(self):
@@ -200,17 +199,57 @@ class HandoverSystem:
         if not has_content:
             output += "(無特殊回報事項)"
 
-        self.result_text.delete("1.0", tk.END)
+        self.result_text.delete("1.0", tkinter.END)
         self.result_text.insert("1.0", output)
 
     def copy_to_clipboard(self):
-        content = self.result_text.get("1.0", tk.END)
+        content = self.result_text.get("1.0", tkinter.END)
         self.root.clipboard_clear()
         self.root.clipboard_append(content)
         messagebox.showinfo("系統提示", "內容已複製")
 
+class new_ui(ctk.CTk):
+    def __init__(self, root):
+        self.root = root
+        super().__init__()
+        
+        ctk.set_appearance_mode("dark")
+        self.title("姑姑嘎嘎(New_Ui_Ver)")
+        self.geometry(f"{800}x{800}")
+        self.grid_columnconfigure((0, 1), weight=1)
+        self.grid_rowconfigure((0, 1, 2), weight=3)
+
+        #左側
+        self.sidebar_frame = ctk.CTkFrame(self, width=140, corner_radius=0)
+        self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
+        self.sidebar_frame.grid_rowconfigure(4, weight=1)
+        self.logo_label = ctk.CTkLabel(self.sidebar_frame, text="牛馬交接系統", font=ctk.CTkFont(size=20, weight="bold"))
+        self.logo_label.grid(row=0, column=0, padx=20, pady=20)
+
+        self.copy_button = ctk.CTkButton(self.sidebar_frame, text = "複製", command=self.copy_to_clipboard, font=ctk.CTkFont(size=15))
+        self.copy_button.grid(row=5, column=0, padx=20, pady=20)
+
+        #右側
+        self.textbox = ctk.CTkTextbox(self, width=300, height=300,
+                                      font=("Consolas", 16),
+                                      padx=10, pady=10
+                                      )
+        self.textbox.grid(row=0, column=1, rowspan=4, padx=30, pady=20, sticky="nsew")
+
+        
+
+    def copy_to_clipboard(self):
+        content = self.textbox.get("1.0", ctk.END)
+        self.textbox.clipboard_clear()
+        self.textbox.clipboard_append(content)
+        messagebox.showinfo("Warning", "內容已複製")
+
+        
+
+        
+    
+        
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = HandoverSystem(root)
-    root.mainloop()
+    app = new_ui(ctk.CTk)
+    app.mainloop()
