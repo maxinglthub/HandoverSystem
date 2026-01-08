@@ -3,6 +3,16 @@ from tkinter import messagebox
 import customtkinter as ctk #之後再來改
 import datetime
 import os
+from typing import List, Dict, Optional
+
+LIST: Dict[str, List[str]] = {
+    "客戶編號": ["no"],
+    "名字": ["name"],
+    "ID": ["id"],
+    "手機": ["phone"],
+    "地址": ["adress"],
+    "社區": ["apt"],
+}
 
 class HandoverSystem:
     def __init__(self, root):
@@ -57,9 +67,10 @@ class HandoverSystem:
         # === 左側：選項區 ===
         self.left_panel = tk.Frame(main_content, bg=self.colors["bg_panel"], padx=2, pady=2)
         self.left_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 10))
+        self.display_tasks: List[str] = []
         
         # 左側標題
-        tk.Label(self.left_panel, text="  待辦事項 (勾選代表已完成)", 
+        tk.Label(self.left_panel, text="待辦事項", 
                  font=self.font_main, bg=self.colors["bg_panel"], fg=self.colors["accent"], anchor="w", pady=10).pack(fill=tk.X)
 
         # 捲動區塊
@@ -125,9 +136,6 @@ class HandoverSystem:
             widget.destroy()
         self.tasks.clear()
         self.check_vars.clear()
-
-        if not os.path.exists(file_path):
-            self.create_dummy_file(file_path)
         
         try:
             with open(file_path, "r", encoding="utf-8") as f:
@@ -149,14 +157,6 @@ class HandoverSystem:
             
         except Exception as e:
             self.result_text.insert(tk.END, f"錯誤: {str(e)}")
-
-    def create_dummy_file(self, path):
-        content = """開店清潔|店面已完成清潔消毒|店面尚未清潔
-檢查零錢|零錢備用金充足|零錢不足，需換錢
-補飲料|冰箱飲料已補滿|部分飲料缺貨
-倒垃圾|垃圾已清運|垃圾未清運"""
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(content)
 
     def create_checkboxes(self):
         """在深色背景上建立勾選框"""
@@ -181,7 +181,7 @@ class HandoverSystem:
 
     def generate_text(self):
         today = datetime.datetime.now().strftime("%Y/%m/%d")
-        output = f"{today} 工讀生交接: \n"
+        output = f"{today} 工讀生交接: \n今日出、改單: \n\n今日設定WIFI機、無紙化設定: \n\n其他事項: \n"
         
         has_content = False
         
@@ -192,11 +192,11 @@ class HandoverSystem:
             content = text_true if is_checked else text_false
             
             if content:
-                # 使用簡單的符號列表
-                mark = "[v]" if is_checked else "[ ]"
-                output += f"{mark} {content}\n"
+                output += f"{content}\n"
                 has_content = True
         
+        output += f"\n工讀生交接&維修:"
+
         if not has_content:
             output += "(無特殊回報事項)"
 
@@ -208,6 +208,7 @@ class HandoverSystem:
         self.root.clipboard_clear()
         self.root.clipboard_append(content)
         messagebox.showinfo("系統提示", "內容已複製")
+
 
 if __name__ == "__main__":
     root = tk.Tk()
