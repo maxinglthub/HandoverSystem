@@ -18,6 +18,7 @@ class Task:
 class HandoverApp(ctk.CTk):
     def __init__(self):
         super().__init__()
+        print("hello")
 
         #icon
         icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "icon.ico")
@@ -54,6 +55,7 @@ class HandoverApp(ctk.CTk):
 
     def _build_ui(self):
         #header
+        print("build ui")
         header = ctk.CTkFrame(self, corner_radius=12)
         header.grid(row=0, column=0, columnspan=2, padx=18, pady=(18, 10), sticky="ew")
         header.grid_columnconfigure(0, weight=1)
@@ -114,6 +116,7 @@ class HandoverApp(ctk.CTk):
         return os.path.join(base, "tasks.txt")
 
     def load_tasks(self):
+        print("load tasks(reset)")
         #重置
         for w in self.task_scroll.winfo_children():
             w.destroy()
@@ -185,6 +188,7 @@ class HandoverApp(ctk.CTk):
         self.textbox.insert("1.0", output)
 
     def copy_to_clipboard(self):
+        print("copy to clipboard")
         content = self.textbox.get("1.0", "end").rstrip()
         self.clipboard_clear()
         self.clipboard_append(content)
@@ -192,19 +196,21 @@ class HandoverApp(ctk.CTk):
         messagebox.showinfo("系統提示", "內容已複製")
 
     def select_all(self):
+        print("select all")
         for v in self.vars:
             v.set(True)
 
     def clear_all(self):
+        print("clear all")
         for v in self.vars:
             v.set(False)
 
     #gugugaga
     def play_mp3(self):
+        print("play mp3")
         pygame.mixer.music.stop()
         pygame.mixer.music.load(self.mp3_path)
         pygame.mixer.music.play()
-
 
 if __name__ == "__main__":
     app = HandoverApp()
