@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>姑姑嘎嘎(2.0) - 網頁版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Noto+Sans+TC:wght@400;700&display=swap');
+        
+        body {
+            background-color: #1a1b1e;
+            color: #dce1e6;
+            font-family: 'Noto Sans TC', 'JetBrains Mono', 'Consolas', sans-serif;
+        }
+        .card {
+            background-color: #25262b;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .scroll-area {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        /* 自定義捲軸 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #2c2e33; }
+        ::-webkit-scrollbar-thumb { background: #4a4d53; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #5c5f66; }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #1971c2;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="p-6 md:p-10">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="card p-4 mb-6 flex justify-between items-center border-l-4 border-blue-500">
+            <h1 class="text-xl font-bold tracking-wider">牛馬交接系統 (Web 2.0)</h1>
+            <div class="flex gap-2">
+                <button onclick="playAudio()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition">
+                    🔊 播放音效
+                </button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="card p-6 flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-300">待辦事項</h2>
+                    <button onclick="importTasks()" class="text-xs text-blue-400 hover:underline">匯入 tasks.txt 格式</button>
+                </div>
+                <div id="task-list" class="scroll-area space-y-3 pr-2">
+                    </div>
+            </div>
+
+            <div class="card p-6 flex flex-col">
+                <h2 class="text-lg font-semibold mb-4 text-gray-300">輸出結果</h2>
+                <textarea id="output-text" class="w-full h-80 bg-[#1a1b1e] text-sm p-4 rounded-lg border border-gray-700 focus:border-blue-500 outline-none resize-none font-mono" readonly></textarea>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-6">
+                    <button onclick="copyText()" class="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition">複製</button>
+                    <button onclick="resetTasks()" class="bg-gray-600 hover:bg-gray-700 text-white py-2 rounded transition">重置</button>
+                    <button onclick="selectAll(true)" class="bg-gray-600 hover:bg-gray-700 text-white py-2 rounded transition">全選</button>
+                    <button onclick="selectAll(false)" class="bg-gray-600 hover:bg-gray-700 text-white py-2 rounded transition">全不選</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="bg-audio" src="mp3.mp3"></audio>
+
+    <script>
+        // 預設資料 (模擬 tasks.txt)
+        let tasks = [
+            { label: "檢查伺服器", when_checked: "- 伺服器運行正常", when_unchecked: "" },
+            { label: "備份資料庫", when_checked: "- 資料庫已完成備份", when_unchecked: "- 警告：資料庫未備份" },
+            { label: "環境清潔", when_checked: "- 辦公環境已整理", when_unchecked: "" }
+        ];
+
+        // 初始化
+        function init() {
+            renderTasks();
+            updateOutput();
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('task-list');
+            container.innerHTML = '';
+            tasks.forEach((task, index) => {
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-3 p-2 hover:bg-[#2c2e33] rounded transition cursor-pointer";
+                div.innerHTML = `
+                    <input type="checkbox" id="task-${index}" onchange="updateOutput()">
+                    <label for="task-${index}" class="flex-1 cursor-pointer select-none">${task.label}</label>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateOutput() {
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')}`;
+            
+            let header = `${dateStr} 工讀生交接:\n今日出、改單:\n\n今日設定WIFI機、無紙化設定:\n\n其他事項:\n`;
+            let lines = [];
+            let hasAny = false;
+
+            tasks.forEach((task, index) => {
+                const isChecked = document.getElementById(`task-${index}`).checked;
+                const content = isChecked ? task.when_checked : task.when_unchecked;
+                if (content) {
+                    lines.push(content);
+                    hasAny = true;
+                }
+            });
+
+            let tail = "\n工讀生交接&維修:";
+            if (!hasAny) tail += "(無特殊回報事項)";
+
+            const finalOutput = header + (lines.length > 0 ? lines.join('\n') + '\n' : "") + tail;
+            document.getElementById('output-text').value = finalOutput;
+        }
+
+        function copyText() {
+            const textArea = document.getElementById('output-text');
+            navigator.clipboard.writeText(textArea.value).then(() => {
+                alert("內容已複製到剪貼簿！");
+            });
+        }
+
+        function resetTasks() {
+            selectAll(false);
+        }
+
+        function selectAll(bool) {
+            tasks.forEach((_, index) => {
+                document.getElementById(`task-${index}`).checked = bool;
+            });
+            updateOutput();
+        }
+
+        function playAudio() {
+            const audio = document.getElementById('bg-audio');
+            audio.currentTime = 0;
+            audio.play().catch(e => alert("請確保 mp3.mp3 放在相同目錄下"));
+        }
+
+        // 模擬從 tasks.txt 格式匯入
+        function importTasks() {
+            const raw = prompt("請貼入 tasks.txt 的內容 (格式: 標籤|選取文字|未選文字)");
+            if (!raw) return;
+
+            const newTasks = [];
+            const lines = raw.split('\n');
+            lines.forEach(line => {
+                if (!line.trim() || line.startsWith('#')) return;
+                const parts = line.split('|').map(p => p.trim());
+                if (parts.length >= 2) {
+                    newTasks.push({
+                        label: parts[0],
+                        when_checked: parts[1],
+                        when_unchecked: parts[2] || ""
+                    });
+                }
+            });
+
+            if (newTasks.length > 0) {
+                tasks = newTasks;
+                renderTasks();
+                updateOutput();
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
