@@ -1,0 +1,2 @@
+ErrorCode:001 = CSV 無法用常見編碼讀取（UTF-8/Big5），請改存 UTF-8 再試。
+ErrorCode:002 = 只支援 .xlsx/.xls/.csv 檔案。

@@ -8,6 +8,14 @@ from tkinter import messagebox
 import customtkinter as ctk
 import pygame
 
+#import core.py
+try:
+    from core import CoreClass
+except:
+    from core import CoreClass
+
+
+
 @dataclass
 class Task:
     label: str
