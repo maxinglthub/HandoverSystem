@@ -2,7 +2,7 @@ import pandas as pand
 import os
 import datetime
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 class CoreClass:
 
